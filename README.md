@@ -67,4 +67,4 @@ Consultez [Next.js deployment documentation](https://nextjs.org/docs/deployment)
 - [Next.js](https://nextjs.org/docs) - Framework Web de développement front-end open-source  pour React
 - [React.js](https://fr.reactjs.org/docs/getting-started.html) -  bibliothèque JavaScript open-source pour faciliter la création d'application web monopage
 - [MaterialUI](https://material-ui.com/) - Composants React pour un développement Web plus rapide et plus facile
-- [tuto NodeJS NextJS](https://medium.com/bb-tutorials-and-thoughts/how-to-develop-and-build-next-js-app-with-nodejs-backend-7ff91841bd3) - Ce projet a été réalisé avec cet article
+- [Tuto NodeJS NextJS](https://medium.com/bb-tutorials-and-thoughts/how-to-develop-and-build-next-js-app-with-nodejs-backend-7ff91841bd3) - Ce projet a été réalisé avec cet article
