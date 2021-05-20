@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: node-next-app
+  name: node-next-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: node-next-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: node-next-app
+    spec:
+      containers:
+        - image: nextfrontend.azurecr.io/aksdemo/next-nodejs:v1
+          name: webapp
+          imagePullPolicy: Always
+          resources: {}
+          ports:
+            - containerPort: 3080
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-next-app
+  labels:
+    run: node-next-app
+spec:
+  ports:
+    - port: 3080
+      protocol: TCP
+  selector:
+    app: node-next-app
+  type: LoadBalancer

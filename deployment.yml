@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: node-next-app
+  name: node-next-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: node-next-app
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: node-next-app
+    spec:
+      containers:
+        - image: docker.io/jauneloke/node-next-app
+          name: webapp
+          imagePullPolicy: Always
+          resources: {}
+          ports:
+            - containerPort: 3080
+status: {}
