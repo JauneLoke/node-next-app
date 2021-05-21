@@ -1,13 +1,13 @@
 import Button from '@material-ui/core/Button';
 import Link from 'next/link'
 
-export default function Home() {
+export default function Contact() {
 	return (
 		<>
-			<Link href="/contact">
+			<Link href="/">
 				<a>
 					<Button variant="contained" color="primary">
-						Contact
+						Home
 					</Button>
 				</a>
 			</Link>
