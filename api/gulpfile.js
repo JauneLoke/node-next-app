@@ -1,71 +1,101 @@
-const { src, dest, series, parallel } = require('gulp');
+require('dotenv').config();
 const del = require('del');
 const fs = require('fs');
+const { src, dest, series, parallel } = require('gulp');
 const zip = require('gulp-zip');
+const kill = require('kill-port')
 const log = require('fancy-log');
-const webpack_stream = require('webpack-stream');
-const webpack_config = require('./webpack.config.js');
 var exec = require('child_process').exec;
 
-const dirname = "node-next-app";
-
-const paths = {
-	prod_build: '../build',
-	server_file_name: 'server.bundle.js',
-	react_src: `../${dirname}/build/**/*`,
-	react_dist: `../build/${dirname}/build`,
-	zipped_file_name: 'mode-next-app.zip',
-};
-
-function clean() {
-	log('removing the old files in the directory')
-	return del('../build/**', { force: true });
+const name = {
+	prod_dir: 'production',
+	project: "node-next-build",
+	api: 'api',
+	app: 'app'
 }
 
-function createProdBuildFolder() {
+function clean() {
+	log('Removing the old files in the directory')
+	return del(`../${name.prod_dir}/**`, { force: true });
+}
 
-	const dir = paths.prod_build;
-	log(`Creating the folder if not exist  ${dir}`)
+function createNodeBuild(cb = "") {
+	log(`Building Node code in ./${name.api}/build`)
+	return exec(`npm run build`, function (err, stdout, stderr) {
+		log(stdout);
+		log(stderr);
+	});
+}
+
+function nodeServerStart(cb = "") {
+	log(`Starting server ${process.env.PORT}`)
+	kill(process.env.PORT, 'tcp')
+	exec(`node ./build/server-bundle.js`);
+	cb();
+}
+
+function createReactBuild(cb = "") {
+	log(`Building React code in ./${name.app}/build`)
+	return exec(`cd ../${name.app}/ && npm run build`, function (err, stdout, stderr) {
+		log(stdout);
+		log(stderr);
+		cb(err);
+	});
+}
+
+function nodeServerStop(cb = "") {
+	log(`Stoping server ${process.env.PORT}`)
+	return kill(process.env.PORT, 'tcp');
+}
+
+function createProductionDir(cb) {
+	const dir = `../${name.prod_dir}`;
+	log(`Creating the folder if not exist ${name.prod_dir}`)
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir);
 		log('📁  folder created:', dir);
 	}
-
 	return Promise.resolve('the value is ignored');
 }
 
-function buildReactCodeTask(cb = "") {
-	log('building React code into the directory')
-	return exec(`cd ../${dirname} && npm run build`, function (err, stdout, stderr) {
-		log(stdout);
-		log(stderr);
-		cb(err);
-	})
+function copyNodeDir() {
+	log(`Copying Node build in ${name.prod_dir}/${name.project}/`)
+	return src('./build/**/*')
+		.pipe(dest(`../${name.prod_dir}/${name.project}`));
 }
 
-function copyReactCodeTask() {
-	log('copying React code into the directory')
-	return src(`${paths.react_src}`)
-		.pipe(dest(`${paths.react_dist}`));
+function copyNodeEnv() {
+	log(`Copying Node Env in ${name.prod_dir}/${name.project}/`)
+	return src('./build/.env')
+		.pipe(dest(`../${name.prod_dir}/${name.project}`));
 }
 
-function copyNodeJSCodeTask() {
-	log('building and copying server code into the directory')
-	return webpack_stream(webpack_config)
-		.pipe(dest(`${paths.prod_build}`))
+function copyReactDir() {
+	log(`Copying React build in ${name.prod_dir}/${name.project}/`)
+	return src(`../${name.app}/build/**/*`)
+		.pipe(dest(`../${name.prod_dir}/${name.project}/${name.app}`));
+}
+
+function copyConfigfiles() {
+	log(`Copying config files in ${name.prod_dir}/${name.project}/`)
+	return src(`../config/**/*`)
+		.pipe(dest(`../${name.prod_dir}/${name.project}`));
 }
 
 function zippingTask() {
-	log('zipping the code ')
-	return src(`${paths.prod_build}/**`)
-		.pipe(zip(`${paths.zipped_file_name}`))
-		.pipe(dest(`${paths.prod_build}`))
+	log(`Zipping the code`)
+	return src(`../${name.prod_dir}/${name.project}/**`)
+		.pipe(zip(`${name.project}.zip`))
+		.pipe(dest(`../${name.prod_dir}/`));
 }
 
 exports.default = series(
 	clean,
-	createProdBuildFolder,
-	buildReactCodeTask,
-	parallel(copyReactCodeTask, copyNodeJSCodeTask),
-	zippingTask
+	createNodeBuild,
+	// nodeServerStart,
+	// createReactBuild,
+	// nodeServerStop,
+	createProductionDir,
+	parallel(copyNodeDir, copyNodeEnv, copyReactDir, copyConfigfiles),
+	zippingTask,
 );

@@ -1,0 +1,19 @@
+{
+	"configurations": [
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch via nodemon",
+			"restart": true,
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"program": "${workspaceFolder}\\api\\srv\\server.js",
+			"runtimeExecutable": "${workspaceFolder}/api/node_modules/nodemon/bin/nodemon.js",
+			"envFile": "${workspaceFolder}/api/.env",
+			"skipFiles": [
+				"node_modules/**",
+				"<node_internals>/**"
+			],
+		}
+	]
+}

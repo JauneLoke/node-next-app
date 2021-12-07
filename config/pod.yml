@@ -1,11 +1,15 @@
+# Gère le cycle de vie de containers
+# Si un container n'xiste plus le pod va le redémarrer'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: webapp
+  name: mode-next-app-pod
+  labels:
+    app: node-next-app
 spec:
   containers:
     - image: docker.io/jauneloke/node-next-app
-      name: webapp
+      name: node-next-app
       imagePullPolicy: Always
       resources: {}
       ports:

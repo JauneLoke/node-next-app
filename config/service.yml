@@ -1,7 +1,9 @@
+# Communication entre les applications
+# Point d'entrée unique
 apiVersion: v1
 kind: Service
 metadata:
-  name: node-next-app
+  name: node-next-app-service
   labels:
     run: node-next-app
 spec:
